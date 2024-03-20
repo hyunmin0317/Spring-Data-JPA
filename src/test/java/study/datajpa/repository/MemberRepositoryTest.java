@@ -3,6 +3,7 @@ package study.datajpa.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
@@ -11,8 +12,10 @@ import study.datajpa.entity.Team;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -165,5 +168,26 @@ class MemberRepositoryTest {
 
         //then
         result.forEach(System.out::println);
+    }
+
+    @Test
+    public void returnType() throws Exception {
+        //given
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        //when
+        List<Member> listMembers = memberRepository.findListByUsername("CCC");
+        Member findMember = memberRepository.findMemberByUsername("CCC");
+        Optional<Member> optionalMember = memberRepository.findOptionalByUsername("CCC");
+
+        System.out.println("listMembers = " + listMembers.size());  // 0
+        System.out.println("findMember = " + findMember);           // null
+        System.out.println("optionalMember = " + optionalMember);   // Optional.empty
+
+        // IncorrectResultSizeDataAccessException: Query did not return a unique result: 2 results were returned
+        assertThrows(IncorrectResultSizeDataAccessException.class, () -> memberRepository.findOptionalByUsername("AAA"));
     }
 }
