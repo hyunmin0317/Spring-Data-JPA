@@ -20,9 +20,7 @@ class MemberJpaRepositoryTest {
     @Test
     public void testMember() throws Exception {
         //given
-        Member member = Member.builder()
-                .username("memberA")
-                .build();
+        Member member = new Member("memberA");
 
         //when
         Member savedMember = memberJpaRepository.save(member);

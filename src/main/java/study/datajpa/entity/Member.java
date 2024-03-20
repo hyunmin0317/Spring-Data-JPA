@@ -6,9 +6,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @ToString(of = {"id", "username", "age"})
 public class Member {
 
@@ -24,6 +22,10 @@ public class Member {
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
+
+    public Member(String username) {
+        this.username = username;
+    }
 
     public void changeTeam(Team team) {
         this.team = team;
