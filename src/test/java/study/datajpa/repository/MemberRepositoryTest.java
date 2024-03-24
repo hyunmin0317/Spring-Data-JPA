@@ -11,7 +11,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import study.datajpa.dto.MemberDto;
+import study.datajpa.dto.*;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
@@ -415,5 +415,33 @@ class MemberRepositoryTest {
                 .forEach(System.out::println);
 
         result3.forEach(System.out::println);
+    }
+
+    @Test
+    public void nativeQuery() throws Exception {
+        //given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        //when
+        Member result = memberRepository.findByNativeQuery("m1");
+        Page<MemberProjection> result2 = memberRepository.findByNativeProjection(PageRequest.of(0, 10));
+        List<MemberProjection> content = result2.getContent();
+        for (MemberProjection memberProjection : content) {
+            System.out.println("memberProjection = " + memberProjection.getUsername());
+            System.out.println("memberProjection = " + memberProjection.getTeamName());
+        }
+
+        //then
+        System.out.println("result = " + result);
     }
 }
